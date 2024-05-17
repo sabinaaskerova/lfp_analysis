@@ -14,10 +14,6 @@ def change_directory(target_directory):
 if __name__ == "__main__":
     target_directory = get_target_directory()
     original_data_path = "/data/"
-    # Calculate PSD on PCA components
-    #pca_14_path =target_directory+"/pca_14/"
-    #psd_path = target_directory+"/delta_psd_pca/"
-    #psd_path_gamma = target_directory+"/gamma_psd_pca/"
     fmin=0.1
     fmax=80
     
@@ -67,12 +63,9 @@ if __name__ == "__main__":
                 Calculate_PSD.plot_colored_psd(animal,ana,cond,"gamma", 
                                 time,freqs_gamma,PSD_gamma,psd_path, channel_no=1, plot=False)
                 
-
-                #quit()
                 string = animal+"_"+ana+"_"+cond+'_'+str(fmin)+'_'+str(fmax)
                 
                 path_psd = psd_path+"ascii_out_"+string+"/"
-                #means = PSD_Fluctuations.mean_fluctuations(path_psd)
                 band_string = "delta"
                 PSD_Fluctuations.plot_mean_fluctuations(mean_delta.T, string,band_string, path = psd_path,num_channels=2, plot=False)
                 band_string = "gamma"
