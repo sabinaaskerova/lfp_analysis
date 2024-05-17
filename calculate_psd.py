@@ -32,19 +32,6 @@ class Calculate_PSD:
             power_ = np.zeros(nb_points_window//2) 
 
             freqs = np.linspace(fmin,fmax,fmax_num-fmin_num)
-            #max_time_index = int(num_time/onesec_length - sliding_window_length)
-            #for j in range(0, max_time_index): 
-            
-            #outlabel = result_folder+'ascii_out_'+file+'_'+ana+'_'+stype+'_'+str(fmin)+'_'+str(fmax)+'/'+'out%d.dat'%(j)
-            #if not os.path.exists(result_folder+'ascii_out_'+file+'_'+ana+'_'+stype+'_'+str(fmin)+'_'+str(fmax)+'/'):
-            #        os.makedirs(result_folder+'ascii_out_'+file+'_'+ana+'_'+stype+'_'+str(fmin)+'_'+str(fmax)+'/')
-
-            #start_time = j*onesec_length
-            #end_time = (j+1)*onesec_length+portion_length*onesec_length
-            #start_time = j*onesec_length
-            #end_time = (j+1)*onesec_length+portion_length*onesec_length
-            #print("start_time, end_time", start_time, end_time)
-
             start_time = 0
             end_time = num_time
             duration = (end_time-start_time)*dt
@@ -66,19 +53,7 @@ class Calculate_PSD:
                         power           = power_[fmin_num:fmax_num]/float(num_windows)
                     else:
                         power           = np.log(power_[fmin_num:fmax_num]/float(num_windows))
-                    PSD[i,:,num] = power
-                
-                #ff = open(outlabel,'w+')
-                #res_str = ''
-                #for j in range(0, fmax_num-fmin_num):
-                #    res_str = '%f '%freqs[j]
-                #    for k in range(0, num_chans):
-                #        res_str += '%f  '%PSD[k,j] 
-                #    res_str += '\n'
-                #    ff.write(res_str)
-                #ff.close()
-                #print("written ",outlabel)
-            
+                    PSD[i,:,num] = power            
             return time,freqs,PSD
     
     @staticmethod
@@ -93,10 +68,6 @@ class Calculate_PSD:
     
     @staticmethod
     def plot_colored_psd(animal, ana,stype,freqlabel,time,freqs,PSD,psd_file_prefix, channel_no=1, plot=False):
-    #def plot_colored_psd(data_path, animal, ana,stype, fmin, fmax, sliding_window_length, psd_file_prefix, df, channel_no=1, plot=False):
-        #label = data_path+animal+"_"+ana+"_"+stype+"_new.dat"
-        #data=np.loadtxt(label)
-        
         ## PSD: n_channels, len(freqs),num_windows
         num_time = np.shape(PSD)[2]
         tmin = time[0]
@@ -105,23 +76,15 @@ class Calculate_PSD:
         fmin = freqs[0]
 
         dt = time[1]-time[0] #%%%%%%%%%%%%%%%%
-        #dt = 600/num_time
-        #onesec_length = int(1/dt)
-        df = freqs[1]-freqs[0]#1/sliding_window_length
-        #max_time_index = int(num_time/onesec_length - sliding_window_length)
+        df = freqs[1]-freqs[0] #%%%%%%%%%%%%%%%%
         
         def forceAspect(ax,aspect=1):
             im = ax.get_images()
             extent =  im[0].get_extent()
             ax.set_aspect(abs((extent[1]-extent[0])/(extent[3]-extent[2]))/aspect)
         
-        fmax_num = len(freqs)#int((fmax-fmin)/df) 
-        #pow_arr = np.zeros((max_time_index, fmax_num))
-
+        fmax_num = len(freqs)#%%%%%%%%%%%%%%%%
         
-        #for i in range(0,max_time_index):
-            #print("####### ",psd_file_prefix+'ascii_out_'+animal+'_'+ana+'_'+stype+'_'+str(fmin)+'_'+str(fmax)+'/out%d.dat'%i)
-        #    pow_arr[i] = np.loadtxt(psd_file_prefix+'ascii_out_'+animal+'_'+ana+'_'+stype+'_'+str(fmin)+'_'+str(fmax)+'/out%d.dat'%i)[:,channel_no]
         plt.figure('%d_channel'%channel_no,figsize=(12, 4), facecolor='white')
         c = plt.imshow(PSD[channel_no,:,:], interpolation ='none', origin ='lower', extent=[tmin,tmax,fmin, fmax]) 
         
