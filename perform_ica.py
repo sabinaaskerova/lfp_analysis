@@ -25,19 +25,16 @@ class Perform_ICA:
         return np.argmax(np.var(components, axis=1))
     
     @staticmethod
-    def remove_modes(modes, mixing_matrix, components,  V, mean_):
+    def remove_modes(modes, mixing_matrix, components,  V):
         
         new_components = components.copy()
         new_mixing_matrix = mixing_matrix.copy()
         new_V = V.copy()
-        new_mean = mean_.copy()
         for mode_number in modes:
-            if mode_number >= 0 and mode_number < components.shape[0]:
-                new_components[mode_number, :] = 0
-                new_mixing_matrix[:, mode_number] = 0
-                new_V[:, mode_number] = 0
-                new_mean[mode_number] = 0
-        return new_components, new_mixing_matrix, new_V, new_mean
+            new_components[mode_number-1, :] = 0
+            new_mixing_matrix[:, mode_number-1] = 0
+            new_V[:, mode_number-1] = 0
+        return new_components, new_mixing_matrix, new_V
     
     @staticmethod
     def recreate_signal(mixing_, mean_, V):
