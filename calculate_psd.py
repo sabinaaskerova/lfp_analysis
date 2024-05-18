@@ -25,8 +25,6 @@ class Calculate_PSD:
             
             fs = 500.0 #%%%%%%%%%%%%%%%
             dt = 1.0/fs #%%%%%%%%%%%%%%%%
-            #dt = 600/num_time
-            #onesec_length = int(1/dt)
             overlap_num = int(overlap/dt)
             nb_points_window = int(sliding_window_length/dt) # number of points in the window 5/0.002 = 2500
             power_ = np.zeros(nb_points_window//2) 
