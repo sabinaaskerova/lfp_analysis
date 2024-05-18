@@ -38,35 +38,22 @@ if __name__ == "__main__":
     ana_list = ['low', 'high', 'medium']
     cond_list = ['pre', 'post', 'stim']
     
-    index = 2
-    animal = animal_list[index]
-    ana = ana_list[index]
-    cond = cond_list[index]
+    for animal in animal_list:
+        for ana in ana_list:
+            for cond in cond_list:
    
-    # ICA
-    path_data = target_directory+original_data_path+"ascii_out_"+animal+"_"+ana+"_"+cond+".dat"
-    data = np.loadtxt(path_data)[:, 1:-1]
-    ica_model, V = Perform_ICA.perform_ica(data, n_components=13)
-    
-    components = ica_model.components_
-    mixing_matrix = ica_model.mixing_
-    mean_ = ica_model.mean_
-    
-    # print(f"data shape {data.shape}")
-    # print(f"V.shape {V.shape}")
-    # print(f"components.shape {components.shape}")
-    # print(f"mixing_matrix.shape {mixing_matrix.shape}")
-    # print(f"mean_.shape {mean_.shape}")
-    # Perform_ICA.visualize_components(components.T, all=False)
-    # Perform_ICA.visualize_components(data, all=True, original_signal=True)
-    
-    artifact = Perform_ICA.define_artifact_mode(components)
-    print(f'Artifact mode is {artifact}')
-    
-    new_components, new_mixing_matrix, new_V, new_mean = Perform_ICA.remove_mode(artifact, mixing_matrix ,components,  V, mean_) # remove artifact mode
-    # print(f"new_components.shape {new_components.shape}")
-    # print(f"new_mixing_matrix.shape {new_mixing_matrix.shape}")
-    # print(f"new_V.shape {new_V.shape}")
-    
-    new_signal = Perform_ICA.recreate_signal(mixing_=new_mixing_matrix,mean_=new_mean, V=new_V)
-    Perform_ICA.visualize_components(new_signal.T, all=True, original_signal=True)
+                # ICA
+                path_data = target_directory+original_data_path+"ascii_out_"+animal+"_"+ana+"_"+cond+".dat"
+                data = np.loadtxt(path_data)[:, 1:-1]
+                ica_model, V = Perform_ICA.perform_ica(data, n_components=13)
+                
+                components = ica_model.components_
+                mixing_matrix = ica_model.mixing_
+                mean_ = ica_model.mean_
+                
+                Perform_ICA.visualize_components(components.T,animal,ana,cond, all=False, original_signal=True)
+
+   
+    # new_components, new_mixing_matrix, new_V, new_mean = Perform_ICA.remove_mode(artifact, mixing_matrix ,components,  V, mean_) # remove artifact mode
+    # new_signal = Perform_ICA.recreate_signal(mixing_=new_mixing_matrix,mean_=new_mean, V=new_V)
+    # Perform_ICA.visualize_components(new_signal.T, all=True, original_signal=True)
