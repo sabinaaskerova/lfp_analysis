@@ -15,16 +15,31 @@ def change_directory(target_directory):
 class Perform_ICA:
     @staticmethod
     def perform_ica(data, n_components=14):
-        ica = FastICA(n_components=n_components, random_state=42, whiten=True)
-        S_ = ica.fit_transform(data.T)
-        return ica, S_
+        ica = FastICA(n_components=n_components, random_state=42, whiten="arbitrary-variance")
+        V = ica.fit_transform(data.T)
+        return ica, V
     
     @staticmethod
-    def remove_mode(mode_number, mixing_matrix, components,  S_):
-        return np.delete(components, mode_number, axis=0), np.delete(mixing_matrix, mode_number, axis=1), np.delete(S_, mode_number, axis=1)
+    def define_artifact_mode(components):
+        # returns the index of the mode with the highest variance
+        return np.argmax(np.var(components, axis=1))
+    
     @staticmethod
-    def recreate_signal(mixing_, mean_, S_):
-        return np.dot(S_, mixing_.T) + mean_
+    def remove_mode(mode_number, mixing_matrix, components,  V, mean_):
+        # return np.delete(components, mode_number, axis=0), np.delete(mixing_matrix, mode_number, axis=1), np.delete(V, mode_number, axis=1)
+        new_components = components.copy()
+        new_components[mode_number, :] = 0
+        new_mixing_matrix = mixing_matrix.copy()
+        new_mixing_matrix[:, mode_number] = 0
+        new_V = V.copy()
+        new_V[:, mode_number] = 0
+        new_mean = mean_.copy()
+        new_mean[mode_number] = 0
+        return new_components, new_mixing_matrix, new_V, new_mean
+    
+    @staticmethod
+    def recreate_signal(mixing_, mean_, V):
+        return np.dot(V, mixing_.T) + mean_
         
     
     @staticmethod
@@ -83,65 +98,9 @@ class Perform_ICA:
 
             labels = range(0, 601, 100)
             plt.xticks(np.linspace(0, len(extracted_components[i]), len(labels)), labels)
-            plt.show()
+        plt.show()
 
 
-if __name__ == "__main__":
-    target_directory = get_target_directory()
-    original_data_path = "/data/"
-    fmin=0.1
-    fmax=80
-    
-    fmin_delta = 0.1
-    fmax_delta = 4.0
-    fmin_gamma=20
-    fmax_gamma=60
-    fbands = [fmin_delta,fmax_delta,fmin_gamma,fmax_gamma]
-    
-    sliding_window_length=10
-    overlap = 0.05#0.1
-    df = 1/sliding_window_length
-    
-    pca_14_path =target_directory+"/pca_14_sw%.2f_ol%.2f/"%(sliding_window_length,overlap)
-    psd_path = target_directory+"/delta_psd_pca_sw%.2f_ol%.2f/"%(sliding_window_length,overlap)
-    psd_path_gamma = target_directory+"/gamma_psd_pca_sw%.2f_ol%.2f/"%(sliding_window_length,overlap)
-    ica_14_path =target_directory+"/ica_14_sw%.2f_ol%.2f/"%(sliding_window_length,overlap)
-    
-    
-    animal_list = ['20110810B', '20110817A', '20110817B', '20110824A', '20110824B', '20110913A']
-    ana_list = ['low', 'high', 'medium']
-    cond_list = ['pre', 'post', 'stim']
-    index = 1
-    animal = animal_list[index]
-    ana = ana_list[index]
-    cond = cond_list[index]
-    # ICA
-    path_data = target_directory+original_data_path+"ascii_out_"+animal+"_"+ana+"_"+cond+".dat"
-    data = np.loadtxt(path_data)[:, 1:-1]
-    ica_model, S_ = Perform_ICA.perform_ica(data, n_components=13)
-    
-    components = ica_model.components_
-    mixing_matrix = ica_model.mixing_
-    whiten_matrix = ica_model.whitening_
-    mean_ = ica_model.mean_
-    
-    # print(f"components.shape {components.shape}")
-    # print(f"mixing_matrix.shape {mixing_matrix.shape}")
-    # print(f"whiten_matrix.shape {whiten_matrix.shape}")
-    # print(f"mean_.shape {mean_.shape}")
-
-    new_components, new_mixing_matrix, new_S = Perform_ICA.remove_mode(6, mixing_matrix ,components,  S_) # remove 7th mode
-    
-    # print(f"new_components.shape {new_components.shape}")
-    # print(f"new_mixing_matrix.shape {new_mixing_matrix.shape}")
-    # print(f"new_S.shape {new_S.shape}")
-
-    # Perform_ICA.visualize_components(components.T, all=False)    
-    
-    new_signal = Perform_ICA.recreate_signal(mixing_=new_mixing_matrix,mean_=mean_, S_=new_S)
-    print(new_signal.shape)
-    # Perform_ICA.visualize_components(new_signal.T, all=False, original_signal=True)
-    
     
 
     
