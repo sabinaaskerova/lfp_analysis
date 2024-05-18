@@ -5,8 +5,11 @@ import os
 
 class Perform_PCA:
     @staticmethod
-    def elbow_criteria(path, n_components=14, plot_scree=False):
-        data = np.loadtxt(path)[:, 1:-1] # exclude the first and the last channels
+    def elbow_criteria(path, n_components=14, noise_channels_removed=False, plot_scree=False):
+        if noise_channels_removed:
+            data = np.loadtxt(path)
+        else:
+            data = np.loadtxt(path)[:, 1:-1] # exclude the first and the last channels
         data_centered = data - np.mean(data, axis=0)
 
         pca = PCA(n_components=n_components)
@@ -34,8 +37,11 @@ class Perform_PCA:
         return elbow_point+1
 
     @staticmethod
-    def define_number_components(path, n_components=14, threshold=0.95):
-        data = np.loadtxt(path)[:, 1:-1]
+    def define_number_components(path, n_components=14, noise_channels_removed=False, threshold=0.95):
+        if noise_channels_removed:
+            data = np.loadtxt(path)
+        else:
+            data = np.loadtxt(path)[:, 1:-1]
         data_centered = data - np.mean(data, axis=0)
 
         pca = PCA(n_components=n_components)
@@ -50,10 +56,13 @@ class Perform_PCA:
         return num_components
 
     @staticmethod
-    def perform_pca(path, n_components, animal, ana, cond, result_folder="pca_14/"):
+    def perform_pca(path, n_components, animal, ana, cond, noise_channels_removed=False,result_folder="pca_14/"):
         if not os.path.exists(result_folder):
             os.makedirs(result_folder)
-        data = np.loadtxt(path)[:, 1:-1] # exclude the first and the last channels
+        if noise_channels_removed:
+            data = np.loadtxt(path)
+        else:
+            data = np.loadtxt(path)[:, 1:-1] # exclude the first and the last channels
         data_centered = data - np.mean(data, axis=0)
         pca = PCA(n_components=n_components)
         pca_data = pca.fit_transform(data_centered)
