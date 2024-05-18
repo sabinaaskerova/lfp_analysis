@@ -25,23 +25,24 @@ class Perform_ICA:
         return np.argmax(np.var(components, axis=1))
     
     @staticmethod
-    def remove_mode(mode_number, mixing_matrix, components,  V, mean_):
-        # return np.delete(components, mode_number, axis=0), np.delete(mixing_matrix, mode_number, axis=1), np.delete(V, mode_number, axis=1)
+    def remove_modes(modes, mixing_matrix, components,  V, mean_):
+        
         new_components = components.copy()
-        new_components[mode_number, :] = 0
         new_mixing_matrix = mixing_matrix.copy()
-        new_mixing_matrix[:, mode_number] = 0
         new_V = V.copy()
-        new_V[:, mode_number] = 0
         new_mean = mean_.copy()
-        new_mean[mode_number] = 0
+        for mode_number in modes:
+            if mode_number >= 0 and mode_number < components.shape[0]:
+                new_components[mode_number, :] = 0
+                new_mixing_matrix[:, mode_number] = 0
+                new_V[:, mode_number] = 0
+                new_mean[mode_number] = 0
         return new_components, new_mixing_matrix, new_V, new_mean
     
     @staticmethod
     def recreate_signal(mixing_, mean_, V):
         return np.dot(V, mixing_.T) + mean_
         
-    
     @staticmethod
     # using kurtosis
     def define_number_components(path, n_components=13, plot=False):
@@ -80,24 +81,33 @@ class Perform_ICA:
         return extracted_components
 
     @staticmethod
-    def visualize_components(extracted_components, all=True, original_signal=False):
+    def visualize_components(extracted_components, animal, ana, cond, all=True, original_signal=False, result_folder="ica/"):
+        path = animal+'_'+ana+'_'+cond+'/'
+        graphs_path = result_folder+path+"graphs/"
+        if not os.path.exists(graphs_path):
+            os.makedirs(graphs_path)
         if all:
             plt.plot(extracted_components, label='ICA')
             labels = range(0, 601, 100)
             plt.xticks(np.linspace(0, len(extracted_components), len(labels)), labels)
+            plt.savefig(graphs_path+animal+'_'+ana+'_'+cond+".png")
         else:
             for i in range(0, extracted_components.shape[1]):
                 plt.figure(figsize=(8, 4))
                 plt.plot(extracted_components[:,i])
                 if original_signal:
-                    plt.title(f'Signal {i+1}')
+                    plt.title(f'{animal} {ana} {cond} Signal {i+1}')
                 else:
-                    plt.title(f'Independent component  {i+1}')
+                    plt.title(f'{animal} {ana} {cond} Independent component  {i+1} ')
                 plt.xlabel('Time (s)')
                 plt.ylabel('Frequency (Hz)')
 
-            labels = range(0, 601, 100)
-            plt.xticks(np.linspace(0, len(extracted_components[i]), len(labels)), labels)
+                labels = range(0, 601, 100)
+                plt.xticks(np.linspace(0, len(extracted_components[i]), len(labels)), labels)
+                plt.savefig(graphs_path+animal+'_'+ana+'_'+cond+'_'+str(i+1)+".png")
+        
+        
+        
         plt.show()
 
 
