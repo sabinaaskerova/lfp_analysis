@@ -51,19 +51,21 @@ if __name__ == "__main__":
                                                     sliding_window_length=sliding_window_length, overlap=overlap, 
                                                     n_channels=14, portion_length=100, 
                                                     log=True, mean=False)
-                freqs_delta,PSD_delta,mean_delta = Calculate_PSD.bands(freqs,PSD,fmin_delta,fmax_delta)
-                freqs_gamma,PSD_gamma,mean_gamma = Calculate_PSD.bands(freqs,PSD,fmin_gamma,fmax_gamma)
-                Calculate_PSD.plot_colored_psd(animal,ana,cond,"delta", 
-                                time,freqs_delta,PSD_delta,psd_path, channel_no=1, plot=False)
-                Calculate_PSD.plot_colored_psd(animal,ana,cond,"gamma", 
-                                time,freqs_gamma,PSD_gamma,psd_path, channel_no=1, plot=False)
+                freqs_delta,PSD_delta,mean_delta,variance_delta = Calculate_PSD.bands(freqs,PSD,fmin_delta,fmax_delta)
+                freqs_gamma,PSD_gamma,mean_gamma, variance_gamma = Calculate_PSD.bands(freqs,PSD,fmin_gamma,fmax_gamma)
+                # Calculate_PSD.plot_colored_psd(animal,ana,cond,"delta", 
+                #                 time,freqs_delta,PSD_delta,psd_path, channel_no=1, plot=False)
+                # Calculate_PSD.plot_colored_psd(animal,ana,cond,"gamma", 
+                #                 time,freqs_gamma,PSD_gamma,psd_path, channel_no=1, plot=False)
                 
                 string = animal+"_"+ana+"_"+cond+'_'+str(fmin)+'_'+str(fmax)
                 
                 path_psd = psd_path+"ascii_out_"+string+"/"
                 band_string = "delta"
                 PSD_Fluctuations.plot_mean_fluctuations(mean_delta.T, string,band_string, path = psd_path,num_channels=2, plot=False)
+                PSD_Fluctuations.plot_variance_fluctuations(variance_delta.T, string,band_string, path = psd_path,num_channels=2, plot=False)
                 band_string = "gamma"
                 PSD_Fluctuations.plot_mean_fluctuations(mean_gamma.T, string, band_string,path = psd_path,num_channels=2, plot=False)
+                PSD_Fluctuations.plot_variance_fluctuations(variance_gamma.T, string, band_string,path = psd_path,num_channels=2, plot=False)
                 
             
