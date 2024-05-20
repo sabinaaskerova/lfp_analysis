@@ -1,14 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os 
+from scipy import fft
 
 class Calculate_PSD:
     @staticmethod
     def compute_PSD_all_portions(data_path, ana,stype,file,fmin,fmax,sliding_window_length,overlap,n_channels=14,portion_length=10,result_folder='psd_pca/',
                                     log=False,mean=False):        
-            label_list = []
-            from scipy import fft
-            
+            label_list = []            
             df = 1/sliding_window_length # frequency resolution
             fmax_num = int((fmax)/df) # number of frequency points
             fmin_num = int(fmin/df)
@@ -62,7 +61,8 @@ class Calculate_PSD:
         power = PSD[:,fmin_num:fmax_num,:]
         freq = freqs[fmin_num:fmax_num]
         mean_power = np.mean(power,axis=1)
-        return freq,power,mean_power
+        variance_power = np.var(power,axis=1)
+        return freq,power,mean_power, variance_power
     
     @staticmethod
     def plot_colored_psd(animal, ana,stype,freqlabel,time,freqs,PSD,psd_file_prefix, channel_no=1, plot=False):
@@ -91,7 +91,6 @@ class Calculate_PSD:
         plt.ylabel('Frequency indexes(%f-%f Hz)'%(fmin, fmax))
         plt.title('%s-PSD over Time on PCA '%freqlabel+animal+" "+ana+" "+stype+" "+str(channel_no))
         forceAspect(plt.gca(),aspect=4)
-
         string = freqlabel+'_'+animal+'_'+ana+'_'+stype+'_'+str(fmin)+'_'+str(fmax)
         graphs_path = psd_file_prefix+'ascii_out_'+string+"/graphs/"
         if not os.path.exists(graphs_path):
