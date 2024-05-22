@@ -23,7 +23,7 @@ class Perform_PCA:
         if plot_scree:
             n_components = range(1, len(pca.explained_variance_) + 1)
             plt.figure(figsize=(6, 6))
-            plt.plot(n_components,explained_variance, 'o-', linewidth=2)
+            plt.plot(n_components,pca.explained_variance_ratio_, 'o-', linewidth=2)
             plt.title('Screen Plot')
             plt.xlabel('Number of Components')
             plt.ylabel('Explained Variance')
@@ -31,10 +31,11 @@ class Perform_PCA:
 
             print(f'Elbow point is at {elbow_point+1} components')
 
-        cumulative_variance = np.cumsum(pca.explained_variance_ratio_)
-        print("Cumulative explained variance for "+path+" : "+ cumulative_variance * 100)
+        cumulative_variance = np.cumsum(pca.explained_variance_ratio_) * 100  # Corrected calculation
+        print("Cumulative explained variance for "+path+" : ", cumulative_variance)
 
         return elbow_point+1
+
 
     @staticmethod
     def define_number_components(path, n_components=14, noise_channels_removed=False, threshold=0.95):
