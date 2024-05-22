@@ -33,7 +33,7 @@ class Perform_PCA:
 
         cumulative_variance = np.cumsum(pca.explained_variance_ratio_) * 100  # Corrected calculation
         print("Cumulative explained variance for "+path+" : ", cumulative_variance)
-
+        print(elbow_point+1)
         return elbow_point+1
 
 

@@ -24,7 +24,7 @@ if __name__ == "__main__":
     fbands = [fmin_delta,fmax_delta,fmin_gamma,fmax_gamma]
     
     sliding_window_length=10
-    overlap = 0.05#0.1
+    overlap = 0.05
     df = 1/sliding_window_length
     
     pca_14_path =target_directory+"/pca_14_sw%.2f_ol%.2f/"%(sliding_window_length,overlap)
@@ -37,12 +37,14 @@ if __name__ == "__main__":
     ana_list = ['low', 'high', 'medium']
     cond_list = ['pre', 'post', 'stim']
 
+
     for animal in animal_list:
         for ana in ana_list:
             for cond in cond_list:
                 # PCA
                 path_data = target_directory+original_data_path+"ascii_out_"+animal+"_"+ana+"_"+cond+".dat"
                 n_comp = Perform_PCA.define_number_components(path_data)
+                print("n_comp: ", n_comp)
                 Perform_PCA.perform_pca(path_data, n_comp, animal, ana, cond, result_folder=pca_14_path)
                 
                 # delta band
